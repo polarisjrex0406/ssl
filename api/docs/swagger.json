@@ -1,0 +1,340 @@
+{
+    "openapi": "3.1.1",
+    "info": {
+        "title": "Certificate Transparency API",
+        "description": "API for certificate search and management using Gin framework",
+        "version": "1.0",
+        "contact": {
+            "name": "API Support",
+            "email": "support@ssl.example"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://37.27.171.40:8080",
+            "description": "Development server"
+        }
+    ],
+    "paths": {
+        "/certs": {
+            "get": {
+                "summary": "List Certificate",
+                "description": "Endpoint for certificate list",
+                "operationId": "filter",
+                "security": [
+                    {
+                        "XODUXCRTAuthToken": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "pagenum",
+                        "in": "query",
+                        "description": "🔍 Page number when list all certificates",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "pagesize",
+                        "in": "query",
+                        "description": "🔍 Page size when list all certificates",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "ctid",
+                        "in": "query",
+                        "description": "🔍 CT Entry ID",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "sha1",
+                        "in": "query",
+                        "description": "🔍 SHA-1 to search certificate",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "sha256",
+                        "in": "query",
+                        "description": "🔍 SHA-256 to search certificate",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "🔍 Part of identity to search with matching",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "serial",
+                        "in": "query",
+                        "description": "🔍 Serial number to search identity",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "ski",
+                        "in": "query",
+                        "description": "🔍 Subject Key Identifier to search identity",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "spkisha1",
+                        "in": "query",
+                        "description": "🔍 SHA-1 (Subject Public Key Info) to search identity",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "spkisha256",
+                        "in": "query",
+                        "description": "🔍 SHA-256 (Subject Public Key Info) to search identity",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[a-fA-F0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "caid",
+                        "in": "query",
+                        "description": "🔍 CA ID to search",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    },
+                    {
+                        "name": "caname",
+                        "in": "query",
+                        "description": "🔍 CA name to search",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "opt",
+                        "in": "query",
+                        "description": "⚙️ Search option",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "nometadata",
+                                "ocsp",
+                                "problemreporting",
+                                "pkimetal"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response",
+                                    "description": "Response varies based on parameters: \n- With 'd': Returns CRT file\n- Without 'd': Returns search results"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/certs/{id}/download": {
+            "get": {
+                "summary": "Certificate Download",
+                "description": "Endpoint for certificate download",
+                "operationId": "download",
+                "security": [
+                    {
+                        "XODUXCRTAuthToken": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "🔍 Certificate ID to download",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/pkix-cert": {
+                                "schema": {
+                                    "type": "string",
+                                    "contentMediaType": "application/pkix-cert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/certs/{id}": {
+            "get": {
+                "summary": "Certificate Query",
+                "description": "Endpoint for certificate query",
+                "operationId": "query",
+                "security": [
+                    {
+                        "XODUXCRTAuthToken": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "🔍 Certificate ID to query",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response",
+                                    "description": "Returns search results"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "XODUXCRTAuthToken": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-XODUXCRT-AUTH-TOKEN",
+                "description": "API authentication token. Contact support@xyz.com to obtain credentials."
+            }
+        },
+        "schemas": {
+            "Response": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/CTSearchResponse"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                }
+            },
+            "CTSearchResponse": {
+                "type": "object",
+                "oneOf": [
+                    {
+                        "required": [
+                            "certificate_content"
+                        ],
+                        "properties": {
+                            "certificate_content": {
+                                "$ref": "#/components/schemas/CertificateContent"
+                            }
+                        }
+                    },
+                    {
+                        "required": [
+                            "identity_content"
+                        ],
+                        "properties": {
+                            "identity_content": {
+                                "$ref": "#/components/schemas/IdentityContent"
+                            }
+                        }
+                    },
+                    {
+                        "required": [
+                            "specific_ca_content"
+                        ],
+                        "properties": {
+                            "specific_ca_content": {
+                                "$ref": "#/components/schemas/SpecificCAContent"
+                            }
+                        }
+                    },
+                    {
+                        "required": [
+                            "multiple_ca_content"
+                        ],
+                        "properties": {
+                            "multiple_ca_content": {
+                                "$ref": "#/components/schemas/MultipleCAContent"
+                            }
+                        }
+                    }
+                ]
+            },
+            "CertificateContent": {
+                "type": "object",
+                "additionalProperties": true
+            },
+            "IdentityContent": {
+                "type": "array"
+            },
+            "SpecificCAContent": {
+                "type": "object",
+                "additionalProperties": true
+            },
+            "MultipleCAContent": {
+                "type": "array"
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
